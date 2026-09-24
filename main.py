@@ -6,13 +6,20 @@ import os
 BASELINE_FILE = "baseline.json"
 MONITOR_FOLDER = "test_files"
 
+# Terminal colors
+GREEN = "\033[92m"
+RED = "\033[91m"
+YELLOW = "\033[93m"
+CYAN = "\033[96m"
+RESET = "\033[0m"
+
 
 def show_banner():
-    print("""
-╔════════════════════════════════════════╗
+    print(f"""
+{CYAN}╔════════════════════════════════════════╗
 ║        🔐 FILE INTEGRITY MONITOR       ║
 ║          SHA-256 Security Tool         ║
-╚════════════════════════════════════════╝
+╚════════════════════════════════════════╝{RESET}
 """)
 
 
@@ -30,7 +37,7 @@ def create_baseline():
     baseline = {}
 
     if not os.path.exists(MONITOR_FOLDER):
-        print("\n❌ Monitoring folder not found!")
+        print(f"\n{RED}❌ Monitoring folder not found!{RESET}")
         return
 
     for file_name in os.listdir(MONITOR_FOLDER):
@@ -42,13 +49,13 @@ def create_baseline():
     with open(BASELINE_FILE, "w", encoding="utf-8") as file:
         json.dump(baseline, file, indent=4)
 
-    print("\n✅ Baseline created successfully!")
+    print(f"\n{GREEN}✅ Baseline created successfully!{RESET}")
     print(f"Files monitored: {len(baseline)}")
 
 
 def check_integrity():
     if not os.path.exists(BASELINE_FILE):
-        print("\n❌ No baseline found.")
+        print(f"\n{RED}❌ No baseline found.{RESET}")
         print("Please create a baseline first.")
         return
 
@@ -56,10 +63,10 @@ def check_integrity():
         baseline = json.load(file)
 
     if not os.path.exists(MONITOR_FOLDER):
-        print("\n❌ Monitoring folder not found!")
+        print(f"\n{RED}❌ Monitoring folder not found!{RESET}")
         return
 
-    print("\n🔍 Checking file integrity...\n")
+    print(f"\n{CYAN}🔍 Checking file integrity...{RESET}\n")
 
     current_files = set()
 
@@ -82,7 +89,7 @@ def check_integrity():
 
         # File deleted
         if not os.path.exists(file_path):
-            print(f"❌ {file_name} - FILE DELETED")
+            print(f"{RED}❌ {file_name} - FILE DELETED{RESET}")
             deleted_count += 1
             continue
 
@@ -91,34 +98,36 @@ def check_integrity():
 
         # Compare hashes
         if current_hash == original_hash:
-            print(f"✅ {file_name} - No changes")
+            print(f"{GREEN}✅ {file_name} - No changes{RESET}")
             safe_count += 1
         else:
-            print(f"⚠️ {file_name} - MODIFIED")
+            print(f"{YELLOW}⚠️ {file_name} - MODIFIED{RESET}")
             modified_count += 1
 
     # Detect newly added files
     for file_name in current_files:
 
         if file_name not in baseline:
-            print(f"🆕 {file_name} - NEW FILE DETECTED")
+            print(f"{RED}🆕 {file_name} - NEW FILE DETECTED{RESET}")
             new_count += 1
 
     # Security summary
-    print("\n╔════════════════════════════════════════╗")
-    print("║           SECURITY SUMMARY             ║")
-    print("╚════════════════════════════════════════╝")
+    print(f"""
+{CYAN}╔════════════════════════════════════════╗
+║           SECURITY SUMMARY             ║
+╚════════════════════════════════════════╝{RESET}
+""")
 
-    print(f"\nFiles checked : {len(baseline)}")
-    print(f"Safe          : {safe_count}")
-    print(f"Modified      : {modified_count}")
-    print(f"Deleted       : {deleted_count}")
-    print(f"New files     : {new_count}")
+    print(f"Files checked : {len(baseline)}")
+    print(f"{GREEN}Safe          : {safe_count}{RESET}")
+    print(f"{YELLOW}Modified      : {modified_count}{RESET}")
+    print(f"{RED}Deleted       : {deleted_count}{RESET}")
+    print(f"{RED}New files     : {new_count}{RESET}")
 
     if modified_count > 0 or deleted_count > 0 or new_count > 0:
-        print("\n⚠️ SECURITY ALERT: Changes detected!")
+        print(f"\n{RED}⚠️ SECURITY ALERT: Changes detected!{RESET}")
     else:
-        print("\n✅ SYSTEM SECURE: No changes detected!")
+        print(f"\n{GREEN}✅ SYSTEM SECURE: No changes detected!{RESET}")
 
 
 def main():
@@ -143,7 +152,7 @@ def main():
             break
 
         else:
-            print("\n❌ Invalid option. Please choose 1, 2, or 3.")
+            print(f"\n{RED}❌ Invalid option. Please choose 1, 2, or 3.{RESET}")
 
 
 if __name__ == "__main__":
